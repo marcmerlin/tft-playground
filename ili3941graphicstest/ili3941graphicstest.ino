@@ -17,29 +17,6 @@
 #include "SPI.h"
 #include "Adafruit_GFX.h"
 #include "Adafruit_ILI9341.h"
-
-    /*  https://pinout.xyz/pinout/spi
-    SD1331 Pin	    Arduino	ESP8266		ESP32	ESP32	rPi     rPi
-    1 GND                                       VSPI    HSPI	SPI0    SPI1
-    2 VCC
-    3 SCL/SCK/SCK/D0	13	GPIO14/D5	18	14	BC11/22	BC21/40
-    4 SDA/SDI/MOSI/D1	11	GPIO13/D7	23	13	BC10/19	BC20/38
-    ---- 2 pins above and MISO are HWSPI, pins below are anything
-    ---- RST is not part of SPI, it's an out of band signal to reset a TFT
-    ---- This could be wired to the ESP32 EN(reset) pin
-    5 RES/RST		9	GPIO15/D8	26	26	BC24				
-    ---- Data/Command pin is not part of SPI but used to tell the TFT if incoming SPI
-    ---- data is actually a command, or pixel data.
-    6 DC/A0/RS (data)	8	GPIO05/D1	25	25	BC23				
-    ---- Cable select chooses which SPI device we're talking to, if there is only
-    ---- one, it can be tied to ground. Any pin is fine
-    7 CS/SS => GND	10	GPIO04/D2	27	15	BC08			
-    
-    ---- MISO is not used to talk to TFTs, but is one of the 3 SPI hardware pins
-      MISO		12	GPIO12/D6	19	12	BM11/23	BC19/35	
-    */
-
-
 #include "tft_pins.h"
 
 
