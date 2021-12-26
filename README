@@ -1,0 +1,4 @@
+PDQgraphicstest works on both boards
+MultipleDeviceTest works on ILI9341 and SSD1331
+FastLED_ArduinoGFX_TFT/MatrixGFXDemo.ino works for half screen
+

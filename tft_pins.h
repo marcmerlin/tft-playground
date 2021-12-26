@@ -1,4 +1,5 @@
-int tft_spi_speed = 24 * 1000 * 1000;
+// Seems that SSD1331 might require 80Mhz to work, while others prefer 24Mhz due to poor wiring
+int tft_spi_speed = 40 * 1000 * 1000;
 
     /*  https://pinout.xyz/pinout/spi
     SD1331 Pin	    Arduino	ESP8266		ESP32	ESP32	rPi     rPi
@@ -29,8 +30,8 @@ int tft_spi_speed = 24 * 1000 * 1000;
 
 #if defined(ESP32)
 // this is the TFT reset pin. Some boards may have an auto-reset circuitry on the breakout so this pin might not required but it can be helpful sometimes to reset the TFT if your setup is not always resetting cleanly. Connect to ground to reset the TFT
-    // #define TFT_RST 26 // Grey
-    #define TFT_RST -1 // Grey, can be wired to ESP32 EN to save a pin
+    #define TFT_RST 26 // Grey
+    //#define TFT_RST -1 // Grey, can be wired to ESP32 EN to save a pin
     #define TFT_DC  25 // Purple
     //#define TFT_CS -1 // for display without CS pin
     #define TFT_CS  0 // White can be wired to ground

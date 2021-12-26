@@ -1,7 +1,40 @@
 /*******************************************************************************
  * Start of Arduino_GFX setting
  ******************************************************************************/
+#define NO_TFT_SPI_PIN_DEFAULTS
 #include <Arduino_GFX_Library.h>
+
+
+#include "arduinogfx.h"
+
+
+void setup(void)
+{
+    gfx->begin(24000000);
+    gfx->fillScreen(BLACK);
+
+#ifdef TFT_BL
+    pinMode(TFT_BL, OUTPUT);
+    digitalWrite(TFT_BL, HIGH);
+#endif
+
+    gfx->setCursor(10, 10);
+    gfx->setTextColor(RED);
+    gfx->println("Hello World!");
+
+    delay(5000); // 5 seconds
+}
+
+void loop()
+{
+    gfx->setCursor(random(gfx->width()), random(gfx->height()));
+    gfx->setTextColor(random(0xffff));
+    gfx->setTextSize(random(9) /* x scale */, random(9) /* y scale */, random(3) /* pixel_margin */);
+    gfx->println("Hello World!");
+
+    delay(1000); // 1 second
+}
+
 
 /* first check if selected specific hardware */
 // #define ESP32_LCDKIT_SPI
@@ -48,8 +81,6 @@ Arduino_ESP32SPI *bus = new Arduino_ESP32SPI(27 /* DC */, 5 /* CS */, 18 /* SCK 
 Arduino_ST7789 *gfx = new Arduino_ST7789(bus, -1 /* RST */, 2 /* rotation */, true /* IPS */, 240, 240, 0, 80);
 
 #else /* not selected specific hardware */
-
-#include "arduinogfx.h"
 
 /*
  * Step 2: Initize one driver for your display
@@ -146,30 +177,3 @@ Arduino_ST7789 *gfx = new Arduino_ST7789(bus, -1 /* RST */, 2 /* rotation */, tr
 /*******************************************************************************
  * End of Arduino_GFX setting
  ******************************************************************************/
-
-void setup(void)
-{
-    gfx->begin(80000000);
-    gfx->fillScreen(BLACK);
-
-#ifdef TFT_BL
-    pinMode(TFT_BL, OUTPUT);
-    digitalWrite(TFT_BL, HIGH);
-#endif
-
-    gfx->setCursor(10, 10);
-    gfx->setTextColor(RED);
-    gfx->println("Hello World!");
-
-    delay(5000); // 5 seconds
-}
-
-void loop()
-{
-    gfx->setCursor(random(gfx->width()), random(gfx->height()));
-    gfx->setTextColor(random(0xffff));
-    gfx->setTextSize(random(9) /* x scale */, random(9) /* y scale */, random(3) /* pixel_margin */);
-    gfx->println("Hello World!");
-
-    delay(1000); // 1 second
-}

@@ -1,6 +1,7 @@
 /*******************************************************************************
  * Start of Arduino_GFX setting
  ******************************************************************************/
+#define NO_TFT_SPI_PIN_DEFAULTS
 #include <Arduino_GFX_Library.h>
 
 /* all display share same SPI Data Bus with individual CS and RST pins */
@@ -42,7 +43,7 @@ void setup()
   pinMode(TFT_BL, OUTPUT);
   digitalWrite(TFT_BL, HIGH);
 #endif
-  
+
   Serial.begin(115200);
   while (!Serial)
   {
@@ -52,27 +53,46 @@ void setup()
   Serial.print("Arduino_GFX library dual display Test speed ");
   Serial.println(tft_spi_speed);
 
-  gfx1->begin(tft_spi_speed);
-  gfx1->fillScreen(RED);
-  delay(200);
+  // For reasons unknown if gfx2 is initialized first, it breaks gfx1
+  Serial.println();
+  Serial.println("ILI on breadboard at 24Mhz (40Mhz can work, 80Mhz fine on LCA board)");
+  gfx2->begin(40000000);
+  gfx2->fillScreen(RED);
+  delay(2000);
 
+  Serial.println();
   Serial.println("SSD1331 on breadboard requires 80Mhz while ILI3941 requires 24Mhz");
-  gfx2->begin(tft_spi_speed);
-  gfx2->fillScreen(YELLOW);
-  delay(200);
+  gfx1->begin(40000000);
+  gfx1->fillScreen(YELLOW);
+  delay(2000);
+
+
+  Serial.println("Demo Start");
 }
 
 void loop()
 {
   test();
 
-  if (gfx == gfx1)
-  {
-    gfx = gfx2;
-  }
-  else // gfx == gfx4
+  if (gfx == gfx2)
   {
     gfx = gfx1;
+    // talking to GFX2 seems to upset GFX1 and it stops working
+    // resetting it each time seems to help.
+    // Just a bus reset is not enough
+    //bus->begin(80000000);
+    // needs the init sequence
+    gfx1->begin(40000000);
+    Serial.println("Back to GFX1");
+  }
+  else
+  {
+    gfx = gfx2;
+    //bus2->begin(40000000);
+    // for reasons unknown 40Mhz seems faster than 80Mhz
+    // ILI needs a different SPI bus config to work
+    gfx2->begin(40000000);
+    Serial.println("Switch to GFX2/ILI");
   }
   delay(200);
 }

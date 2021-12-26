@@ -34,9 +34,10 @@
 #define OLED_DC    TFT_DC
 #define OLED_CS    TFT_CS
 
-//Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
 
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &SPI, OLED_DC, OLED_RESET, OLED_CS);
+// SPI version broken in adafruit driver
+//Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &SPI, OLED_DC, OLED_RESET, OLED_CS);
 
 #define NUMFLAKES     10 // Number of snowflakes in the animation example
 
@@ -61,7 +62,7 @@ static const unsigned char PROGMEM logo_bmp[] =
   B00000000, B00110000 };
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
   if(!display.begin(SSD1306_SWITCHCAPVCC)) {
