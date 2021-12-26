@@ -20,15 +20,6 @@
  *     - Seeed_Arduino_FS: https://github.com/Seeed-Studio/Seeed_Arduino_FS.git
  *     - Seeed_Arduino_SFUD: https://github.com/Seeed-Studio/Seeed_Arduino_SFUD.git
  ******************************************************************************/
-/* Wio Terminal */
-#if defined(ARDUINO_ARCH_SAMD) && defined(SEEED_GROVE_UI_WIRELESS)
-#define GIF_FILENAME "/ezgif.com-optimize.gif"
-#elif defined(ESP32)
-#define GIF_FILENAME "/ezgif.com-optimize.gif"
-#else
-#define GIF_FILENAME "/ezgif.com-resize.gif"
-#endif
-#define GIF_FILENAME "/invaders_anim.gif"
 
 /*******************************************************************************
  * Start of Arduino_GFX setting
@@ -36,21 +27,31 @@
 #define NO_TFT_SPI_PIN_DEFAULTS
 #include <Arduino_GFX_Library.h>
 
+#ifdef SINGLEDEVICE
 #include "arduinogfx.h"
-
-/* Wio Terminal */
-#if defined(ARDUINO_ARCH_SAMD) && defined(SEEED_GROVE_UI_WIRELESS)
-#include <Seeed_FS.h>
-#include <SD/Seeed_SD.h>
-#elif defined(ESP32)
-#include <SPIFFS.h>
-// #include <SD.h>
-#elif defined(ESP8266)
-#include <LittleFS.h>
-#include <SD.h>
 #else
-#include <SD.h>
+#include "tft_pins.h"
+Arduino_DataBus *bus = new Arduino_HWSPI(TFT_DC, TFT_CS);
+Arduino_DataBus *bus2 = new Arduino_HWSPI(TFT_DC, TFT_CS2);
+
+// SSD1331 OLED 96x64
+// do not add 4th IPS argument, even FALSE
+// Do not reset first device when setting 2nd device
+Arduino_SSD1331 *gfx1 = new Arduino_SSD1331(bus, TFT_RST, 2 /* rotation */);
+// Do not reset 2nd device, it would unsetup the first
+Arduino_ILI9341 *gfx2 = new Arduino_ILI9341(bus2, -1, 3 /* rotation */);
 #endif
+
+// Choose one screen or the other, here.
+#ifdef SCREEN2
+Arduino_GFX *gfx = gfx1;
+#define GIF_FILENAME "/kiss2.gif"
+#else
+Arduino_GFX *gfx = gfx2;
+#define GIF_FILENAME "/invaders_anim.gif"
+#endif
+
+#include <SPIFFS.h>
 
 #include "GifClass.h"
 static GifClass gifClass;
@@ -71,18 +72,7 @@ void setup()
   gfx->setTextColor(RED);
   gfx->println("Hello World!");
 
-/* Wio Terminal */
-#if defined(ARDUINO_ARCH_SAMD) && defined(SEEED_GROVE_UI_WIRELESS)
-  if (!SD.begin(SDCARD_SS_PIN, SDCARD_SPI, 4000000UL))
-#elif defined(ESP32)
   if (!SPIFFS.begin())
-  // if (!SD.begin(SS))
-#elif defined(ESP8266)
-  if (!LittleFS.begin())
-  // if (!SD.begin(SS))
-#else
-  if (!SD.begin())
-#endif
   {
     Serial.println(F("ERROR: File System Mount Failed!"));
     gfx->println(F("ERROR: File System Mount Failed!"));
@@ -100,18 +90,7 @@ void setup()
 
     Serial.printf("File: %s\n", GIF_FILENAME);
 
-/* Wio Terminal */
-#if defined(ARDUINO_ARCH_SAMD) && defined(SEEED_GROVE_UI_WIRELESS)
-    File gifFile = SD.open(GIF_FILENAME, "r");
-#elif defined(ESP32)
     File gifFile = SPIFFS.open(GIF_FILENAME, "r");
-    // File gifFile = SD.open(GIF_FILENAME, "r");
-#elif defined(ESP8266)
-    File gifFile = LittleFS.open(GIF_FILENAME, "r");
-    // File gifFile = SD.open(GIF_FILENAME, "r");
-#else
-    File gifFile = SD.open(GIF_FILENAME, FILE_READ);
-#endif
     if (!gifFile || gifFile.isDirectory())
     {
       Serial.println(F("ERROR: open gifFile Failed!"));
